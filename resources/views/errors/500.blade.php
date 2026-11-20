@@ -1,0 +1,4 @@
+<x-layouts.error
+    code="500"
+    title="Something went wrong"
+    message="The server hit an unexpected error. Please try again in a moment." />
