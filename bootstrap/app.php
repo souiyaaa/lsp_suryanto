@@ -1,6 +1,9 @@
 <?php
 
+use App\Exceptions\PaymentProofUploadException;
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsApproved;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,12 +21,24 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
+            'approved' => EnsureUserIsApproved::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Web requests fall through to resources/views/errors/{404,500}.blade.php.
         // API requests get the same JSON envelope as ApiResponse.
         $isApi = fn (Request $request) => $request->is('api/*');
+
+        // Upload runs before the DB transaction, so nothing was saved: go back and keep the input.
+        $exceptions->render(function (PaymentProofUploadException $uploadException, Request $request) use ($isApi) {
+            if ($isApi($request)) {
+                return Controller::errorResponse($uploadException->getMessage(), 502);
+            }
+
+            return back()->withInput()->with('error', $uploadException->getMessage());
+        });
 
         $exceptions->render(function (ValidationException $validationException, Request $request) use ($isApi) {
             if (! $isApi($request)) {

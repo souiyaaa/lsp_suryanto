@@ -1,3 +1,28 @@
+# Garage Rental App — BNSP Certification
+
+Laravel + SQLite + Blade + Breeze, PHPUnit, run on Herd. Timezone Asia/Jakarta.
+
+## Source of truth
+- Requirements: @docs/requirements.md
+- Database schema: @docs/erd.md
+- If code and these docs disagree, stop and ask before changing either.
+
+## Rules
+- Follow 3NF. Derived values (number of days, rent, charging cost) are
+  model accessors, never columns.
+- you may not push anything to the github
+- garages.is_used is written only by GarageStatusService::refresh().
+  Availability checks always query rentals, never is_used.
+- Business logic lives in Services, not Controllers. Validation in FormRequests.
+- Money is whole Rupiah (unsignedInteger). Dates use [start, end).
+- Every service method gets a PHPUnit test.
+
+## Commands
+- php artisan test
+- php artisan schedule:work   (keep running during demo)
+
+===
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
@@ -97,6 +122,16 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
 - Activate the `deploying-to-cloud` skill whenever deploying to Laravel Cloud, configuring Cloud environments or resources, using the Cloud CLI, or troubleshooting Cloud deployments.
+
+=== tests rules ===
+
+# Test Enforcement
+
+- Add or update tests for behavior and logic changes when a test provides meaningful regression coverage.
+- Pure copy, styling, and layout-only changes do not require new or updated tests.
+- When test coverage applies, run the affected tests and ensure they pass.
+- Test the changed behavior and its important failure modes, but do not add tests beyond them.
+- Read the `testing-best-practices` skill before writing tests.
 
 === laravel/core rules ===
 

@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Jakarta',
 
     /*
     |--------------------------------------------------------------------------
@@ -122,5 +122,17 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Seeded Admin Password
+    |--------------------------------------------------------------------------
+    |
+    | Password of the single admin account created by DatabaseSeeder.
+    | Set ADMIN_PASSWORD in .env; there is no admin sign-up.
+    |
+    */
+
+    'admin_password' => env('ADMIN_PASSWORD'),
 
 ];
