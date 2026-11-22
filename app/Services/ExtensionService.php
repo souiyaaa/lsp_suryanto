@@ -1,12 +1,14 @@
 <?php
+
 namespace App\Services;
 
-use App\Services\Calculators\RentalCalculator;
 use App\Enums\RentalType;
 use App\Models\Garage;
 use App\Models\Rental;
+use App\Services\Calculators\RentalCalculator;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -18,11 +20,22 @@ class ExtensionService
         private RentalCalculator $rentalCalculator,
         private AvailabilityService $availabilityService,
         private GarageStatusService $garageStatusService,
-    ) {
-    }
+    ) {}
 
     /** FR-27: original rentals whose chain (original or any extension) covers today. */
     public function activeRentalsToday(): Collection
+    {
+        return $this->activeRentalsTodayQuery()->get();
+    }
+
+    /** Same rows as activeRentalsToday(), one page at a time for the admin list. */
+    public function paginateActiveRentalsToday(int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->activeRentalsTodayQuery()->paginate($perPage);
+    }
+
+    /** @return Builder<Rental> */
+    private function activeRentalsTodayQuery(): Builder
     {
         $today = today();
 
@@ -31,8 +44,7 @@ class ExtensionService
                 ->coveringDate($today)
                 ->orWhereHas('extensions', fn (Builder $extensionQuery) => $extensionQuery->coveringDate($today)))
             ->with('penyewa', 'vehicle', 'garage', 'extensions.garage')
-            ->orderBy('start_date')
-            ->get();
+            ->orderBy('start_date');
     }
 
     /** The segment with the latest end date: the next extension starts there. */
@@ -158,7 +170,7 @@ class ExtensionService
     {
         // Extensions are reached through their original rental, never directly.
         if ($originalRental->isExtension()) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException;
         }
 
         $isActiveToday = Rental::inChainOf($originalRental)->coveringDate(today())->exists();

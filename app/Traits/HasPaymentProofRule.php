@@ -5,7 +5,7 @@ namespace App\Traits;
 use App\Services\PaymentProofUploader;
 
 /**
- * One definition of the payment-proof upload rule (NFR-04), shared by every
+ * One definition of the payment-proof upload rule, shared by every
  * FormRequest that takes an image. Rejected here, before any Cloudinary call.
  */
 trait HasPaymentProofRule

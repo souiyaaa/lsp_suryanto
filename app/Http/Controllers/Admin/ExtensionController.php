@@ -20,12 +20,11 @@ class ExtensionController extends Controller
     public function __construct(
         private ExtensionService $extensionService,
         private PaymentProofUploader $paymentProofUploader,
-    ) {
-    }
+    ) {}
 
     public function index(): View
     {
-        return view('admin.extensions.index', ['rentals' => $this->extensionService->activeRentalsToday()]);
+        return view('admin.extensions.index', ['rentals' => $this->extensionService->paginateActiveRentalsToday()]);
     }
 
     public function create(Rental $rental): View

@@ -30,4 +30,6 @@
             </tbody>
         </table>
     </div>
+
+    <div class="mt-4">{{ $pendingPenyewa->links() }}</div>
 </x-page>

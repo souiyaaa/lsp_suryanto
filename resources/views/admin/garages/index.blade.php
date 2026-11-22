@@ -23,4 +23,6 @@
             </tbody>
         </table>
     </div>
+
+    <div class="mt-4">{{ $garages->links() }}</div>
 </x-page>

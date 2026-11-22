@@ -47,4 +47,6 @@
         <div class="bg-white shadow-sm sm:rounded-lg p-6 text-gray-500">Belum ada sewa.</div>
     @endforelse
     </div>
+
+    <div class="mt-4">{{ $rentals->links() }}</div>
 </x-page>

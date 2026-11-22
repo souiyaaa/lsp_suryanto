@@ -2,13 +2,24 @@
 
 namespace App\Http\Requests\Admin;
 
-use Illuminate\Support\Arr;
+use App\Enums\RentalType;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class ExtensionPreviewRequest extends ExtensionRequest
+/** Runs before the admin confirms the popup: no garage choice and no upload yet. */
+class ExtensionPreviewRequest extends FormRequest
 {
-    /** Runs before the admin confirms the popup: no garage choice and no upload yet. */
+    public function authorize(): bool
+    {
+        return true; // the admin middleware already guards the route
+    }
+
     public function rules(): array
     {
-        return Arr::except(parent::rules(), ['payment_proof', 'garage_id']) + ['rental_id' => ['required', 'integer']];
+        return [
+            'rental_type' => ['required', Rule::enum(RentalType::class)],
+            'number_of_days' => ['required_if:rental_type,'.RentalType::Harian->value, 'nullable', 'integer', 'min:1'],
+            'rental_id' => ['required', 'integer'],
+        ];
     }
 }

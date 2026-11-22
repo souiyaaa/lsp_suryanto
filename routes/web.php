@@ -7,10 +7,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RentalController;
 use App\Http\Controllers\RentalPreviewController;
 use App\Http\Controllers\VehicleController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('pages.home');
+    return Auth::check() ? redirect()->route('dashboard') : view('welcome');
 })->name('home');
 
 Route::middleware('auth')->group(function () {

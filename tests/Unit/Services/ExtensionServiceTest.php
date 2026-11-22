@@ -64,6 +64,18 @@ class ExtensionServiceTest extends TestCase
         $this->assertNotContains($future->id, $ids);
     }
 
+    public function test_paginate_active_rentals_today_returns_one_page_of_the_same_rows(): void
+    {
+        foreach (range(1, 12) as $unused) {
+            $this->activeRental();
+        }
+
+        $page = $this->service->paginateActiveRentalsToday(10);
+
+        $this->assertSame(12, $page->total());
+        $this->assertCount(10, $page->items());
+    }
+
     public function test_current_segment_is_the_one_with_the_latest_end_date(): void
     {
         $original = $this->activeRental();

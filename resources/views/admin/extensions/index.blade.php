@@ -21,4 +21,6 @@
             </tbody>
         </table>
     </div>
+
+    <div class="mt-4">{{ $rentals->links() }}</div>
 </x-page>

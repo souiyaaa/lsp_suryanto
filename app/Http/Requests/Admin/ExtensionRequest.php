@@ -2,25 +2,22 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Enums\RentalType;
 use App\Traits\HasPaymentProofRule;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class ExtensionRequest extends FormRequest
+/** A saved extension is an extension preview plus the confirmed garage and the payment proof. */
+class ExtensionRequest extends ExtensionPreviewRequest
 {
     use HasPaymentProofRule;
 
-    public function authorize(): bool
+    /** The save route binds the rental from the URL, so it fills the field the preview takes from the form. */
+    protected function prepareForValidation(): void
     {
-        return true; // the admin middleware already guards the route
+        $this->merge(['rental_id' => $this->route('rental')->getKey()]);
     }
 
     public function rules(): array
     {
-        return [
-            'rental_type' => ['required', Rule::enum(RentalType::class)],
-            'number_of_days' => ['required_if:rental_type,'.RentalType::Harian->value, 'nullable', 'integer', 'min:1'],
+        return parent::rules() + [
             // The garage the admin confirmed in the popup.
             'garage_id' => ['required', 'integer', 'exists:garages,id'],
             'payment_proof' => $this->paymentProofRules(),

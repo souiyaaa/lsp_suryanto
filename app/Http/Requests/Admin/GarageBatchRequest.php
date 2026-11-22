@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Http\Requests\Admin;
 
 use App\Enums\GarageType;
-use App\Services\Generators\GarageCodeGenerator;
+use App\Models\Garage;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,7 +30,7 @@ class GarageBatchRequest extends FormRequest
         return [
             'type' => ['required', Rule::enum(GarageType::class)],
             // The remaining capacity (999 − existing) is checked in GarageBatchService.
-            'amount' => ['required', 'integer', 'min:1', 'max:' . GarageCodeGenerator::MAX_GARAGES_PER_TYPE],
+            'amount' => ['required', 'integer', 'min:1', 'max:'.Garage::MAX_GARAGES_PER_TYPE],
             'daily_price' => ['required', 'integer', 'min:1'],
             'charging_price_per_kwh' => [
                 Rule::requiredIf($garageType?->hasCharging() ?? false),

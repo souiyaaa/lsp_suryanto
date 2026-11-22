@@ -22,4 +22,6 @@
             </tbody>
         </table>
     </div>
+
+    <div class="mt-4">{{ $vehicles->links() }}</div>
 </x-page>

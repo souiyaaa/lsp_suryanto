@@ -36,9 +36,9 @@ class PaymentProofUploader
             ]);
 
             $url = $result['secure_url'] ?? null;
-        } catch (Throwable $e) {
-            report($e);
-            throw new PaymentProofUploadException(previous: $e);
+        } catch (Throwable $uploadError) {
+            report($uploadError);
+            throw new PaymentProofUploadException(previous: $uploadError);
         }
 
         if (! is_string($url) || $url === '') {

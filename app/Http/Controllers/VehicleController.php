@@ -12,7 +12,7 @@ class VehicleController extends Controller
 {
     public function index(Request $request): View
     {
-        return view('penyewa.vehicles.index', ['vehicles' => $request->user()->vehicles()->latest()->get()]);
+        return view('penyewa.vehicles.index', ['vehicles' => $request->user()->vehicles()->latest()->paginate(10)]);
     }
 
     public function create(): View

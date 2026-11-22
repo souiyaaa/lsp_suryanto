@@ -12,14 +12,12 @@ use Illuminate\View\View;
 
 class VerificationController extends Controller
 {
-    public function __construct(private VerificationService $verificationService)
-    {
-    }
+    public function __construct(private VerificationService $verificationService) {}
 
     public function index(): View
     {
         return view('admin.verifications.index', [
-            'pendingPenyewa' => User::penyewa()->where('status', UserStatus::Pending)->oldest()->get(),
+            'pendingPenyewa' => User::penyewa()->where('status', UserStatus::Pending)->oldest()->paginate(10),
         ]);
     }
 

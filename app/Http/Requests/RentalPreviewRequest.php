@@ -1,13 +1,29 @@
 <?php
+
 namespace App\Http\Requests;
 
-use Illuminate\Support\Arr;
+use App\Enums\RentalType;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class RentalPreviewRequest extends RentalRequest
+/** The rental fields only. The preview runs before the user attaches a payment proof. */
+class RentalPreviewRequest extends FormRequest
 {
-    /** Same rules as saving, minus the upload: the preview runs before the user attaches it. */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
     public function rules(): array
     {
-        return Arr::except(parent::rules(), ['payment_proof']);
+        return [
+            'vehicle_id' => ['required', 'integer', Rule::exists('vehicles', 'id')->where('user_id', $this->user()->id)],
+            'garage_id' => ['required', 'integer', 'exists:garages,id'],
+            'rental_type' => ['required', Rule::enum(RentalType::class)],
+            'start_date' => ['required', 'date', 'after_or_equal:today'],
+            'number_of_days' => ['required_if:rental_type,'.RentalType::Harian->value, 'nullable', 'integer', 'min:1'],
+            // Required for E garages; RentalService checks that, since it knows the garage type.
+            'current_kwh' => ['nullable', 'numeric', 'min:0'],
+        ];
     }
 }

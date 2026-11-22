@@ -6,9 +6,11 @@ use App\Http\Requests\Admin\GarageBatchRequest;
 use App\Http\Requests\ChargingRequest;
 use App\Http\Requests\RentalRequest;
 use App\Http\Requests\VehicleRequest;
-use App\Services\Generators\GarageCodeGenerator;
+use App\Models\Garage;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\RequiredIf;
 use Tests\TestCase;
 
 /** Guards against broken imports: every request must build its rules without errors. */
@@ -18,7 +20,7 @@ class RequestClassesTest extends TestCase
     {
         foreach ([ChargingRequest::class, RentalRequest::class] as $class) {
             $request = new $class;
-            $request->setUserResolver(fn () => new \App\Models\User(['id' => 1]));
+            $request->setUserResolver(fn () => new User(['id' => 1]));
             $rules = $request->rules()['payment_proof'];
 
             $this->assertContains('required', $rules);
@@ -34,7 +36,7 @@ class RequestClassesTest extends TestCase
     {
         $rules = (new GarageBatchRequest)->rules();
 
-        $this->assertContains('max:'.GarageCodeGenerator::MAX_GARAGES_PER_TYPE, $rules['amount']);
+        $this->assertContains('max:'.Garage::MAX_GARAGES_PER_TYPE, $rules['amount']);
     }
 
     public function test_vehicle_request_builds_rules_for_battery_types(): void
@@ -43,7 +45,7 @@ class RequestClassesTest extends TestCase
         $rules = $request->rules();
 
         $this->assertArrayHasKey('max_battery_kwh', $rules);
-        $this->assertInstanceOf(\Illuminate\Validation\Rules\RequiredIf::class, $rules['max_battery_kwh'][0]);
+        $this->assertInstanceOf(RequiredIf::class, $rules['max_battery_kwh'][0]);
         $this->assertTrue($rules['max_battery_kwh'][0]->condition);
     }
 }

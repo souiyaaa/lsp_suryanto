@@ -33,7 +33,7 @@
                 <th class="p-3">Jumlah sewa</th><th class="p-3">Pendapatan</th>
             </tr></thead>
             <tbody>
-            @forelse ($rows->sortKeys() as $key => $row)
+            @forelse ($rows as $key => $row)
                 <tr class="border-t">
                     <td class="p-3">{{ match ($reportView) {
                         \App\Enums\ReportView::Monthly => \Carbon\Carbon::create($year, $key, 1)->translatedFormat('F'),
@@ -50,4 +50,6 @@
             </tbody>
         </table>
     </div>
+
+    <div class="mt-4">{{ $rows->links() }}</div>
 </x-page>

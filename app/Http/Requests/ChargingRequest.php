@@ -1,24 +1,22 @@
 <?php
+
 namespace App\Http\Requests;
 
 use App\Traits\HasPaymentProofRule;
-use Illuminate\Foundation\Http\FormRequest;
 
-class ChargingRequest extends FormRequest
+/** A saved charging session is a charging preview plus the payment proof. */
+class ChargingRequest extends ChargingPreviewRequest
 {
     use HasPaymentProofRule;
 
-    public function authorize(): bool
+    /** The save route has the rental in the URL, so it fills the field the preview takes from the form. */
+    protected function prepareForValidation(): void
     {
-        return true; // ownership is checked by RentalPolicy in the controller
+        $this->merge(['rental_id' => $this->route('rental')]);
     }
 
     public function rules(): array
     {
-        return [
-            // The upper limit (below the vehicle's max) is checked in ChargingService.
-            'current_kwh' => ['required', 'numeric', 'min:0'],
-            'payment_proof' => $this->paymentProofRules(),
-        ];
+        return parent::rules() + ['payment_proof' => $this->paymentProofRules()];
     }
 }

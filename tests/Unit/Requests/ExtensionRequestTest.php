@@ -22,6 +22,7 @@ class ExtensionRequestTest extends TestCase
     private function valid(): array
     {
         return [
+            'rental_id' => 1,
             'rental_type' => 'harian',
             'number_of_days' => 5,
             'garage_id' => Garage::factory()->create()->id,
@@ -82,5 +83,11 @@ class ExtensionRequestTest extends TestCase
 
         $this->assertFalse($ok->fails());
         $this->assertArrayHasKey('rental_id', $missingRental->errors()->toArray());
+    }
+
+    public function test_save_request_is_a_preview_request_plus_garage_and_proof(): void
+    {
+        $this->assertInstanceOf(ExtensionPreviewRequest::class, new ExtensionRequest);
+        $this->assertSame([], array_diff(array_keys((new ExtensionPreviewRequest)->rules()), array_keys((new ExtensionRequest)->rules())));
     }
 }

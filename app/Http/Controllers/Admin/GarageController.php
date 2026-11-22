@@ -12,13 +12,11 @@ use Illuminate\View\View;
 
 class GarageController extends Controller
 {
-    public function __construct(private GarageBatchService $garageBatchService)
-    {
-    }
+    public function __construct(private GarageBatchService $garageBatchService) {}
 
     public function index(): View
     {
-        return view('admin.garages.index', ['garages' => Garage::orderBy('type')->orderBy('code')->get()]);
+        return view('admin.garages.index', ['garages' => Garage::orderBy('type')->orderBy('code')->paginate(10)]);
     }
 
     public function create(): View
